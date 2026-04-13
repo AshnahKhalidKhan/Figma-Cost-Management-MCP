@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"from m365_billing_mcp.server.mcp_server_initializer import McpServerInitializer; print\\('imports OK'\\)\")",
+      "Bash(python:*)",
+      "Bash(rustc --version)",
+      "Bash(cargo --version)",
+      "Bash(where rustc:*)",
+      "Bash(where cargo:*)",
+      "WebFetch(domain:rustup.rs)",
+      "WebFetch(domain:www.rust-lang.org)",
+      "Bash(~/.cargo/bin/rustc --version)",
+      "Bash(~/.cargo/bin/cargo --version)",
+      "Read(//c/Users/ashnah.khalid/.cargo/**)",
+      "Bash(powershell -Command \"Copy-Item README.md SETUP.md; Remove-Item README.md\")",
+      "WebFetch(domain:modelcontextprotocol.info)",
+      "WebFetch(domain:developers.figma.com)",
+      "Bash(FIGMA_CLIENT_ID=test FIGMA_CLIENT_SECRET=test FIGMA_REDIRECT_URI=https://example.com FIGMA_SCIM_TOKEN=test FIGMA_ORG_ID=test uv run pytest --tb=short)",
+      "Bash(FIGMA_CLIENT_ID=test FIGMA_CLIENT_SECRET=test FIGMA_REDIRECT_URI=https://example.com FIGMA_SCIM_TOKEN=test FIGMA_ORG_ID=test uv run --extra dev pytest --tb=short)",
+      "Bash(FIGMA_CLIENT_ID=test FIGMA_CLIENT_SECRET=test FIGMA_REDIRECT_URI=https://example.com FIGMA_SCIM_TOKEN=test FIGMA_ORG_ID=test uv run --extra dev python -m pytest --tb=short)"
+    ]
+  }
+}

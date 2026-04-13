@@ -1,0 +1,14 @@
+# Credentials — never commit real secrets
+.mcp.json
+implementations/python/.env
+.env
+
+# Python
+implementations/python/.venv/
+implementations/python/__pycache__/
+implementations/python/src/**/__pycache__/
+implementations/python/tests/__pycache__/
+*.pyc
+
+# Token storage
+.figma-cost-mcp/
