@@ -18,6 +18,10 @@ class RateLimitedClient:
 
     Accepts either a static token string or an async token_provider callable.
     token_provider is called on every request so OAuth tokens are always fresh.
+
+    Figma uses a leaky bucket algorithm. On 429, reads Retry-After header,
+    waits that many seconds, then retries with exponential backoff as fallback.
+    Max 3 retries total.
     """
 
     def __init__(
@@ -50,7 +54,9 @@ class RateLimitedClient:
                 )
             if response.status_code == 429:
                 wait = int(response.headers.get("Retry-After", 2 ** attempt))
-                logger.warning("Rate limited; retrying in %ds (attempt %d/%d)", wait, attempt + 1, _MAX_RETRIES)
+                logger.warning(
+                    "Rate limited; retrying in %ds (attempt %d/%d)", wait, attempt + 1, _MAX_RETRIES
+                )
                 await asyncio.sleep(wait)
                 continue
             response.raise_for_status()

@@ -20,7 +20,21 @@
       "WebFetch(domain:developers.figma.com)",
       "Bash(FIGMA_CLIENT_ID=test FIGMA_CLIENT_SECRET=test FIGMA_REDIRECT_URI=https://example.com FIGMA_SCIM_TOKEN=test FIGMA_ORG_ID=test uv run pytest --tb=short)",
       "Bash(FIGMA_CLIENT_ID=test FIGMA_CLIENT_SECRET=test FIGMA_REDIRECT_URI=https://example.com FIGMA_SCIM_TOKEN=test FIGMA_ORG_ID=test uv run --extra dev pytest --tb=short)",
-      "Bash(FIGMA_CLIENT_ID=test FIGMA_CLIENT_SECRET=test FIGMA_REDIRECT_URI=https://example.com FIGMA_SCIM_TOKEN=test FIGMA_ORG_ID=test uv run --extra dev python -m pytest --tb=short)"
+      "Bash(FIGMA_CLIENT_ID=test FIGMA_CLIENT_SECRET=test FIGMA_REDIRECT_URI=https://example.com FIGMA_SCIM_TOKEN=test FIGMA_ORG_ID=test uv run --extra dev python -m pytest --tb=short)",
+      "Bash(FIGMA_CLIENT_ID=\"mhnqG00owoViLMZSM9XEc9\" FIGMA_CLIENT_SECRET=\"zPSIdMAnMZ5zrhbMjAOL5tFsi5Cj5A\" FIGMA_REDIRECT_URI=\"https://localhost\" FIGMA_SCIM_TOKEN=\"\" FIGMA_ORG_ID=\"1238402962096601831\" uv run python -c \"from figma_cost_mcp.server import main; print\\('Server imports OK'\\)\")",
+      "Bash(C:\\\\Users\\\\ashnah.khalid\\\\OneDrive - Astera Software\\\\Desktop\\\\Certifications\\\\Figma-Cost-Management-MCP\\\\implementations\\\\python\\\\.venv\\\\Scripts\\\\python.exe:*)",
+      "Bash(uv sync:*)",
+      "Bash(uv run:*)",
+      "Bash(\".venv/Scripts/python.exe\" -m pytest)",
+      "Bash(\".venv/Scripts/python.exe\" -c \"from figma_cost_mcp.server import main; print\\('Server OK'\\)\")",
+      "Bash(exit 0)",
+      "WebSearch",
+      "WebFetch(domain:www.figma.com)",
+      "Bash(\".venv/Scripts/python.exe\" -m pytest -v)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(\".venv/Scripts/python.exe\" -m pytest tests/test_teams_tools.py -v)",
+      "Bash(\".venv/Scripts/python.exe\" -m pytest tests/test_auth_tools.py tests/test_oauth.py tests/test_local_auth_server.py -v)",
+      "Bash(find:*)"
     ]
   }
 }

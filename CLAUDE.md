@@ -17,9 +17,14 @@ MCP server for Figma subscription cost/billing management, analysis, and associa
 - **Lean**: No unused code. No speculative abstractions. Minimal dependencies.
 
 ## Figma APIs in Scope
-- **Payments** (`GET /v1/payments`) — subscription/billing validation
-- **SCIM** (`/scim/v2/Users`, `/scim/v2/Groups`) — user and group management for billing
-- **Activity Logs** (`GET /v1/activity_logs`) — billing and user management events only
+- **Teams** (`GET /v1/teams/{team_id}/members`) — member roles and billed seat analysis; available on Pro and above
+- **Payments** (`GET /v1/payments`) — plugin/widget payment validation
+- **SCIM** (`/scim/v2/Users`, `/scim/v2/Groups`) — user and group management for billing; **Enterprise plan required**
+- **Activity Logs** (`GET /v1/activity_logs`) — billing and user management events only; **Organization/Enterprise plan required**
+
+## Plan Compatibility
+- **Pro plan**: Teams API only. SCIM and Activity Logs will return 403.
+- **Organization/Enterprise plan**: All APIs available.
 
 ## Rate Limiting
 Figma uses a leaky bucket algorithm. On 429 responses:
@@ -29,10 +34,11 @@ Figma uses a leaky bucket algorithm. On 429 responses:
 4. Max 3 retries total, then raise
 
 ## Authentication
-- **REST API (Payments, Activity Logs)**: OAuth 2.0 authorization code flow using `FIGMA_CLIENT_ID` + `FIGMA_CLIENT_SECRET`. Tokens stored at `~/.figma-cost-mcp/tokens.json`, auto-refreshed (90-day expiry).
-- **SCIM API (Users, Groups)**: Separate `FIGMA_SCIM_TOKEN` from env — no OAuth scope exists for SCIM.
-- **PAT override**: If `FIGMA_ACCESS_TOKEN` is set, it overrides OAuth for REST API calls (useful for testing).
-- Figma only supports authorization code flow — no client credentials grant.
+- **REST API (Teams, Payments, Activity Logs)**: Personal Access Token via `FIGMA_ACCESS_TOKEN` env var. Create at Figma Settings → Personal access tokens.
+- **SCIM API (Users, Groups)**: Separate `FIGMA_SCIM_TOKEN` from env — Enterprise plans only.
+- **`FIGMA_TEAM_ID`**: Required for Teams API. Find in the Figma URL: `figma.com/files/team/{TEAM_ID}`.
+- **`FIGMA_ORG_ID`**: Required for Activity Logs API. Find in Figma Admin → Settings.
+- No OAuth browser flow — all credentials are static env vars loaded via `python-dotenv`.
 
 ## Python Implementation
 - Location: `implementations/python/`

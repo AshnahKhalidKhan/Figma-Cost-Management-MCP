@@ -60,7 +60,7 @@ async def get_billing_activity_logs(
 
     Covers: seat type changes, license group membership, seat upgrade workflows,
     workspace membership changes, renewal events, and default license type changes.
-    Requires org:activity_log_read OAuth scope.
+    Requires Organization or Enterprise plan.
     """
     client, org_id = _get_client_and_org()
     params = _build_params(org_id, list(BILLING_ACTION_TYPES), limit, start_time, end_time, cursor)
@@ -77,7 +77,7 @@ async def get_user_management_activity_logs(
     """Retrieve user management activity logs for the Figma organization.
 
     Covers: user creation/deletion, permission changes, and SCIM-provisioned user events.
-    Requires org:activity_log_read OAuth scope.
+    Requires Organization or Enterprise plan.
     """
     client, org_id = _get_client_and_org()
     params = _build_params(org_id, list(USER_MGMT_ACTION_TYPES), limit, start_time, end_time, cursor)
@@ -98,8 +98,7 @@ async def get_activity_logs(
     """Retrieve activity logs with optional event type filtering and time range.
 
     When event_types is empty, returns all billing and user management events combined.
-    Use get_billing_activity_logs or get_user_management_activity_logs for pre-filtered views.
-    Requires org:activity_log_read OAuth scope.
+    Requires Organization or Enterprise plan.
     """
     client, org_id = _get_client_and_org()
     types = event_types or list(BILLING_ACTION_TYPES | USER_MGMT_ACTION_TYPES)

@@ -15,8 +15,10 @@ _AUTH_URL = "https://www.figma.com/oauth"
 _TOKEN_URL = "https://api.figma.com/v1/oauth/token"
 _REFRESH_URL = "https://api.figma.com/v1/oauth/refresh"
 
-# Scopes relevant to cost/billing management and activity logs
-OAUTH_SCOPES = "org:activity_log_read current_user:read"
+# Scopes for cost/billing management on Pro plans.
+# org:activity_log_read is Enterprise-only and must NOT be included here.
+# Activity Logs tools will work via PAT with the appropriate plan, not OAuth.
+OAUTH_SCOPES = "current_user:read file_metadata:read"
 
 
 @dataclass
@@ -35,7 +37,9 @@ class OAuthManager:
     """Manages the Figma OAuth 2.0 authorization code flow.
 
     Handles token exchange, persistence, and automatic refresh.
-    Tokens are persisted to ~/.figma-cost-mcp/tokens.json between sessions.
+    Tokens persist to ~/.figma-cost-mcp/tokens.json between sessions.
+    After the first browser authorization, refresh tokens do not expire —
+    subsequent access tokens are refreshed silently using Client ID + Secret.
     """
 
     def __init__(self, client_id: str, client_secret: str, redirect_uri: str) -> None:
@@ -45,17 +49,17 @@ class OAuthManager:
         self._tokens: TokenData | None = None
         self._pending_state: str | None = None
 
-    def get_authorization_url(self) -> tuple[str, str]:
+    def get_authorization_url(self, redirect_uri: str | None = None) -> tuple[str, str]:
         """Generate the Figma OAuth authorization URL.
 
-        Returns (authorization_url, state). The state value must be passed to
-        exchange_code() to prevent CSRF attacks.
+        Returns (authorization_url, state). Pass state to exchange_code() for CSRF protection.
+        redirect_uri overrides the configured value — used by the automated flow.
         """
         state = secrets.token_urlsafe(16)
         self._pending_state = state
         params = {
             "client_id": self._client_id,
-            "redirect_uri": self._redirect_uri,
+            "redirect_uri": redirect_uri or self._redirect_uri,
             "scope": OAUTH_SCOPES,
             "state": state,
             "response_type": "code",
@@ -63,11 +67,12 @@ class OAuthManager:
         query = "&".join(f"{k}={v}" for k, v in params.items())
         return f"{_AUTH_URL}?{query}", state
 
-    async def exchange_code(self, code: str, state: str) -> TokenData:
+    async def exchange_code(self, code: str, state: str, redirect_uri: str | None = None) -> TokenData:
         """Exchange an authorization code for access and refresh tokens.
 
         Raises ValueError if the state doesn't match (CSRF protection).
         Codes expire 30 seconds after Figma issues them.
+        redirect_uri overrides the configured value — must match what was sent in the auth URL.
         """
         if state != self._pending_state:
             raise ValueError("State mismatch — possible CSRF attack. Restart the authorization flow.")
@@ -81,7 +86,7 @@ class OAuthManager:
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
                 data={
-                    "redirect_uri": self._redirect_uri,
+                    "redirect_uri": redirect_uri or self._redirect_uri,
                     "code": code,
                     "grant_type": "authorization_code",
                 },
@@ -103,7 +108,8 @@ class OAuthManager:
     async def refresh(self) -> TokenData:
         """Refresh the access token using the stored refresh token.
 
-        Figma does not rotate refresh tokens — only the access token changes.
+        Figma refresh tokens do not expire — only the access token changes.
+        Client ID + Secret are used to authenticate the refresh request.
         """
         if not self._tokens:
             raise RuntimeError("No tokens to refresh. Complete the authorization flow first.")
@@ -175,10 +181,15 @@ def get_oauth_manager() -> OAuthManager:
     if _manager is None:
         from .config import Config
         config = Config.from_env()
+        if not config.figma_client_id or not config.figma_client_secret:
+            raise RuntimeError(
+                "OAuth is not configured. Set FIGMA_CLIENT_ID and FIGMA_CLIENT_SECRET, "
+                "or set FIGMA_ACCESS_TOKEN to use a Personal Access Token instead."
+            )
         _manager = OAuthManager(
             client_id=config.figma_client_id,
             client_secret=config.figma_client_secret,
-            redirect_uri=config.figma_redirect_uri,
+            redirect_uri=config.figma_redirect_uri or "https://localhost",
         )
     return _manager
 

@@ -49,14 +49,14 @@ async def validate_payment_by_token(
 
 @mcp.tool()
 async def validate_payment_by_user(
-    user_id: Annotated[int, "Figma user ID — use check_figma_auth_status to get the authenticated user's ID"],
+    user_id: Annotated[int, "Figma user ID"],
     resource_type: Annotated[str, "One of: PLUGIN, WIDGET, COMMUNITY_FILE"],
     resource_id: Annotated[int, "ID of the plugin, widget, or community file"],
 ) -> dict:
     """Validate a Figma plugin/widget/community file purchase for a specific user.
 
     Returns payment status (PAID, UNPAID, TRIAL) and purchase details.
-    You can only query resources you own. Authenticate first with start_figma_authorization.
+    You can only query resources you own.
     """
     param_name = _RESOURCE_TYPE_TO_PARAM.get(resource_type.upper())
     if not param_name:
